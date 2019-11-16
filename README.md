@@ -43,23 +43,22 @@ The results were a bit limited based on the limited interaction type provided by
 - Pandas
 - Numpy
 - Flask
-- sqlalchemy
-- sklearn
-- nba_api
+- SQLAlchemy
+- Scikit Learn
+- NBA_api
 - MatplotLib
 - Seaborn
-- D3 / D3 read CSV
-- jquiry
+- d3.js
+- jquery
 
 #### Machine Learning Used
 
-- LineraSVR
+- SVM
 - Decision Tree Regressor
 - Random Forest Regressor
-- Voting Regressor
+- Voting Regressor/Classifier
 - Logistic Regression
-- RFE 
-- Voting Classifier
+- MLP (Neural Networks)
 
 
 ### To Run
