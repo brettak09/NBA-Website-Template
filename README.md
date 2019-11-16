@@ -32,10 +32,9 @@ The results were a bit limited based on the limited interaction type provided by
 
 - Python
 - Jupyter Notebook
-- SQllite
-- HTML 
+- SQLite
+- HTML5/ CSS3/ Bootstrap4
 - JavaScript
-- CSS
 
 
 #### Modules Used
@@ -51,12 +50,13 @@ The results were a bit limited based on the limited interaction type provided by
 - d3.js
 - jquery
 
-#### Machine Learning Used
+
+#### Machine Learning techniques Used
 
 - SVM
 - Decision Tree Regressor
 - Random Forest Regressor
-- Voting Regressor/Classifier
+- Voting Regressor/ Classifier
 - Logistic Regression
 - MLP (Neural Networks)
 
