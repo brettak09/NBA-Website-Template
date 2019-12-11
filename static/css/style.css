@@ -1,3 +1,11 @@
+body {
+    background-image: url("https://stats.nba.com/media/img/teams/logos/BOS_logo.svg");
+    height: 900px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
 .shot-chart {
     display: block;
     position: relative;
@@ -46,4 +54,21 @@
     stroke-linejoin: bevel;
     stroke-miterlimit: 10;
     stroke-width: 3.0;
+}
+
+#predictions {
+    background-color: white;
+}
+
+#top-menu {
+    color: white;
+    background-color: #dc3545;
+}
+
+
+/* styling player's stats */
+
+.list-group-item {
+    font-size: 16px;
+    margin: 0em;
 }

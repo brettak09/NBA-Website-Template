@@ -3,9 +3,15 @@ d3.json('static/db/players.json').then(dropDownMenuOrganizer);
 
 var shotChart = d3.select('.shot-chart');
 var shotType = d3.select('input[name="shots-on-court"]:checked').node().id;
-// console.log(shotType);
-// var radioUserShots = d3.select('input[name="shots-on-court"]:checked') //document.getElementById('use-user-shots');
-// console.log(radioUserShots.checked);
+
+// containers for the predicted and actual stats
+const fgPct2019 = d3.select("#fg-pct-2019");
+const fgPctPredict = d3.select("#fg-pct-predict");
+const ptsPlayer2019 = d3.select("#pts-player-2019");
+const ptsPlayerPredict = d3.select("#pts-player-predict");
+const ptsTeam2019 = d3.select("#pts-team-2019");
+const ptsTeamPredict = d3.select("#pts-team-predict");
+const gameResult = d3.select("#game-result")
 
 
 const radioShotsOnCourt = d3.selectAll("input[name='shots-on-court']");
@@ -15,7 +21,14 @@ radioShotsOnCourt.on("change", function() {
     console.log(shotType);
     // Clean-up existing data: 
     // prediction summary table, random-shot-chart, and user-shot-chart, if they exist
-    d3.select('#predictions').html('');
+    fgPct2019.text("");
+    fgPctPredict.text("");
+    ptsPlayer2019.text("");
+    ptsPlayerPredict.text("");
+    ptsTeam2019.text("");
+    ptsTeamPredict.text("");
+    gameResult.text("");
+
     groups.shotGroup.selectAll('circle').remove();
     groups.userClickableArea.selectAll('circle').remove();
 
@@ -27,8 +40,8 @@ radioShotsOnCourt.on("change", function() {
 });
 
 
-svgWidth = 700;
-svgHeight = 700;
+svgWidth = 500;
+svgHeight = 470;
 
 var margin = {
     top: 40.19,
@@ -40,7 +53,7 @@ var margin = {
 const svg = shotChart.append('svg')
     .attr('preserveAspectRatio', 'xMinYMin meet')
     .attr('xmlns', 'http://www.w3.org/2000/svg')
-    .attr('viewBox', `-100 0 ${svgWidth} ${svgHeight}`);
+    .attr('viewBox', `0 0 ${svgWidth} ${svgHeight}`);
 
 
 // Get the dimensions for shot zone
@@ -69,20 +82,29 @@ var yScaler = d3.scaleLinear()
     .range([margin.top, halfCourtHeight]);
 
 
-
 // Draw a court
 drawCourt();
+
 // Listen for user-inputted shotchart 
 userInputListener(groups.userClickableArea);
 
+// display a player's stat with Al Horford at first
+player_stats_table(201143);
+
 // Draw shots when selecting a player on the dropdown menu
 
-// var playerId = playerDropDown.val();
 var playerDropDown = $('.selectpicker')
 playerDropDown.change(function() {
     // Clean-up existing data: 
     // prediction summary table, random-shot-chart, and user-shot-chart, if they exist
-    d3.select('#predictions').html('');
+    fgPct2019.text("");
+    fgPctPredict.text("");
+    ptsPlayer2019.text("");
+    ptsPlayerPredict.text("");
+    ptsTeam2019.text("");
+    ptsTeamPredict.text("");
+    gameResult.text("");
+
     groups.shotGroup.selectAll('circle').remove();
     groups.userClickableArea.selectAll('circle').remove();
 
@@ -100,17 +122,7 @@ playerDropDown.change(function() {
     // For drawing player's actual shot charts
     if (shotType === 'random-shots') {
         get_random_shots();
-        // d3.json(`/shotchart?playerId=${playerId}&where=${where}`).then((response) => {
-        //     // console.log(response);
-        //     const randonmizedShots = knuthShuffle(response, NumberOfRandomShots);
-        //     drawShots(randonmizedShots, courtWidth, halfCourtHeight, xScaler, yScaler);
 
-        //     // When user click the button "Calculate Results"
-        //     d3.select('#finishedShotButton').on('click', function() {
-        //         console.log(randonmizedShots);
-        //         submitUserInputtedShotcharts(randonmizedShots);
-        //     });
-        // });
     } else {
         // Make the array for storing the user-inputs empty whenever trying another player
         userInputListener(groups.userClickableArea);
@@ -143,6 +155,7 @@ function get_random_shots() {
 
 function player_stats_table(personid) {
     // target the html area
+
     var playerStatAccess = d3.select('#playerStatTable');
 
     // clean-up the existing stats
@@ -169,13 +182,19 @@ function player_stats_table(personid) {
         for (const [key, value] of Object.entries(player_record)) {
             // we have each key, value in the player record
             console.log(key, value);
+            const removed = ["INDEX", "DISPLAY_FIRST_LAST", "PERSON_ID", "FGM", "FGA", "FG3M", "FG3A", "FTM", "FTA", "OREB", "DREB"]
+                // create a data "row" for each set
+                // <li class="list-group-item"><span>Name: </span>sample data info</li>
+                // if (!(key == "" || key == "DISPLAY_FIRST_LAST" || key == "PERSON_ID")) {
+            if (!removed.includes(key)) {
+                if (key === "TEAM_ABBREVIATION") {
+                    d3.select('body').style('background-image', `url("https://stats.nba.com/media/img/teams/logos/${value}_logo.svg")`)
+                }
 
-            // create a data "row" for each set
-            // <li class="list-group-item"><span>Name: </span>sample data info</li>
-            if (!(key == "" || key == "DISPLAY_FIRST_LAST" || key == "PERSON_ID")) {
-                playerStatAccess.append('text')
-                    .attr('class', 'stats')
-                    .html(`<li class="list-group-item ml-4 mb-n3"><span>${key}: </span>${value}</li>`);
+                playerStatAccess.append('li')
+                    .attr('class', 'list-group-item ml-4 mb-n3')
+                    .html(`<span>${key}: </span>${value}`);
+
             }
 
         }
@@ -183,7 +202,6 @@ function player_stats_table(personid) {
     })
 }
 // diplay completed game win/loss results to site
-
 // var playerWinLossResults = $('.winLossColumn')
 
 function submitUserInputtedShotcharts(shotArray) {
@@ -210,56 +228,15 @@ function submitUserInputtedShotcharts(shotArray) {
             response.json().then(function(data) {
                 console.log(data);
                 const predict = d3.select("#predictions");
-                predict.selectAll('div')
-                    .data(data)
-                    .enter()
-                    .append('table')
-                    .attr('class', 'table table-striped table-sm mr-3')
-                    .html(d => {
-                        return `<caption>Step1 predicts: shot-locations -> shot-made%<br>
-                                         Step2 predicts: shot-made% -> player's score<br>
-                                         Step3 predicts: player's score -> team's score<br>
-                                         Step4 predicts: team's score -> win or lose<br>
-                                </caption>                                    
-                                <thead class="text-center">
-                                    <tr>
-                                        <th></th>
-                                        <th scope="col">This Season</th>
-                                        <th scope="col">Predicted</th>
-                                        <th scope="col">Remark<th>
-                                    </tr>
-                                </thead>
-                                <tbody class="text-center">
-                                    <tr>
-                                        <th scope="row">Step1</td>
-                                        <td>${Math.round(d.FG_PCT_2019 * 100) / 100} /
-                                        ${Math.round(d.FG3_PCT_2019 * 100) / 100}
-                                        </td>
-                                        <td>${Math.round(d.FG_PCT * 100) / 100} /
-                                        ${Math.round(d.FG3_PCT * 100) / 100}
-                                        </td>
-                                        <td>2pts. / 3pts. field goal%</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Step2</td>
-                                        <td>${Math.round(d.PTS_player_AVG_2019 * 10) / 10}</td>
-                                        <td>${Math.round(d.PTS_player * 10) / 10}</td>
-                                        <td>avg score (player)</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Step3</td>
-                                        <td>${Math.round(d.PTS_team_AVG_2019 * 10) / 10}</td>
-                                        <td>${Math.round(d.PTS_team * 10) / 10}</td>
-                                        <td>avg score (team)</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Step4</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td style="fontsize: 30px;"><strong>${d.WIN_LOSE}</strong></td>
-                                    </tr>
-                                </tbody>`
-                    });
+
+                // display season average and predicted results to the table
+                fgPct2019.text(`${Math.round(data[0].FG_PCT_2019 * 100) / 100} / ${Math.round(data[0].FG3_PCT_2019 * 100) / 100}`);
+                fgPctPredict.text(`${Math.round(data[0].FG_PCT * 100) / 100} / ${Math.round(data[0].FG3_PCT * 100) / 100}`);
+                ptsPlayer2019.text(`${Math.round(data[0].PTS_player_AVG_2019 * 10) / 10}`);
+                ptsPlayerPredict.text(`${Math.round(data[0].PTS_player * 10) / 10}`);
+                ptsTeam2019.text(`${Math.round(data[0].PTS_team_AVG_2019 * 10) / 10}`);
+                ptsTeamPredict.text(`${Math.round(data[0].PTS_team * 10) / 10}`);
+                gameResult.text(`${data[0].WIN_LOSE}`);
             });
         })
         .catch(function(error) {
@@ -324,23 +301,10 @@ function drawShots(shots) {
     const shotGroup = groups.shotGroup;
     shotGroup.selectAll('circle').remove();
 
-    // create axes
-    // const yAxis = d3.axisLeft(yScaler);
-    // const xAxis = d3.axisBottom(xScaler);
-    // shotGroup.append('g')
-    //     .call(yAxis);
-    // shotGroup.append('g')
-    //     .attr('transform', `translate(0, ${halfCourtHeight})`)
-    //     .call(xAxis);
-
     shotGroup.selectAll('circle')
         .data(shots)
         .enter()
         .append('circle')
-        // .attr('fill', d => {
-        //     if (d.EVENT_TYPE === "Made Shot") return 'green'
-        //     else return 'red'
-        // })
         .attr('cx', d => xScaler(d.LOC_X))
         .attr('cy', d => yScaler(d.LOC_Y))
         .attr('r', '5');
