@@ -128,10 +128,10 @@
         "std_PLAYING%": 0.1230312937
     },
     "Rudy Gobert": {
-        "mean_FG3_PCT": 0.0,
+        "mean_FG3_PCT": 0.000000000001,
         "mean_FG_PCT": 0.6027729469,
         "mean_PLAYING%": 0.4801127214,
-        "std_FG3_PCT": 0.0,
+        "std_FG3_PCT": 0.0000000000001,
         "std_FG_PCT": 0.258948454,
         "std_PLAYING%": 0.1605171832
     },
